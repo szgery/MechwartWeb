@@ -21,9 +21,10 @@ let testfunc = () => {
             test.innerHTML = ""
             for(let i in result){
                 test.innerHTML += `
-                <div class="card">
+                <div class="card" style="width: 50%">
                     <div class="card-body">
-                        ${result[i].name + ", ip: " + result[i].ip_add}
+                        ${result[i].name}, ip: ${result[i].ip_add}
+                        <button style="float: right">Terminal</button>
                     </div>
                 </div>
                 `
