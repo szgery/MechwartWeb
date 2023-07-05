@@ -1,0 +1,5 @@
+Adatok feltöltése api-ba:
+	https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data
+
+NPM Telnet:
+	https://www.npmjs.com/package/telnet-client
