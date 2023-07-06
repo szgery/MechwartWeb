@@ -51,6 +51,10 @@ let initDevs = () => {
     res.send(`"Added device ${device.name}"`)
  })
 
+ app.delete("/delete", (req, res) => {
+    
+ })
+
 app.listen(PORT, () => {
     console.log(`Users: http://localhost:${PORT}/users`)
 })

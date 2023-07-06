@@ -26,8 +26,9 @@ let testfunc = () => {
                 <div class="card" style="width: 50%">
                     <div class="card-body">
                         ${result[i].name}, ip: ${result[i].ip_add}                        
-                        <button style="float: right" onclick="removeItem()">X</button>
+                        <button style="float: right; background-color: red" onclick="removeItem()">X</button>
                         <button style="float: right">Terminal</button>
+                        <button style="float: right">Log</button>
                     </div>
                 </div>
                 `
