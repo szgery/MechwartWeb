@@ -1,6 +1,7 @@
 let mscreen = document.getElementById("mainScreen")
 let test = document.getElementById("test")
 let inpfield = document.getElementById("inputfield")
+let stat = document.getElementById("statusReveal")
 
 let res = []
 
@@ -43,37 +44,25 @@ let add = () => {
 }
 
 let addDevice = () => {
-    let name
-    let ip
+    let name = document.getElementById("inName").value
+    let ip = document.getElementById("inIp").value
 
     if (document.getElementById("inName").value == "" || document.getElementById("inIp").value == "") {
         alert("Üres mező nem vehető fel!")
     }else{
-        inpfield.innerHTML = ""
-        name = document.getElementById("inName").value
-        ip = document.getElementById("inIp").value
+        var urlencoded = new URLSearchParams();
+        urlencoded.append("name", name);
+        urlencoded.append("ip_add", ip);
+        
+        var requestOptions = {
+          method: 'POST',
+          body: urlencoded,
+          redirect: 'follow'
+        };
+        
+        fetch("http://127.0.0.1:9999/add", requestOptions)
+          .then(response => response.json())
+          .then(result => console.log(result), alert(requestOptions.body))
+          .catch(error => console.log('error', error));
     }
-    
-    var requestOptions = {
-        method: 'POST',
-        redirect: 'follow'
-      };
-      
-      fetch("http://127.0.0.1:9999/sw?name=" + name + "&ip=" + ip, requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
-
-}
-
-let removeItem = () => {
-    var requestOptions = {
-        method: 'POST',
-        redirect: 'follow'
-      };
-      
-      fetch("http://127.0.0.1:9999/:remove", requestOptions)
-        .then(response => response.json())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
 }
