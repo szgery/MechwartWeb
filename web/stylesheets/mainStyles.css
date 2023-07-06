@@ -20,3 +20,20 @@ a:hover{
 #devList{
     margin: 10px;
 }
+
+input{
+    display: grid;
+    margin: 5px;
+}
+
+#addPanel{
+    float: right;
+}
+
+button{
+    margin: 5px;
+}
+
+p{
+    margin: 5px;
+}
