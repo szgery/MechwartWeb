@@ -4,12 +4,7 @@ let inpfield = document.getElementById("inputfield")
 let stat = document.getElementById("statusReveal")
 
 let res = []
-
-let load = () => {
-    mscreen.innerHTML = `
-    
-    `
-}
+let ip_arr = []
 
 let testfunc = () => {
     let requestOptions = {
@@ -26,22 +21,16 @@ let testfunc = () => {
                 <div class="card" style="width: 50%">
                     <div class="card-body">
                         ${result[i].name}, ip: ${result[i].ip_add}                        
-                        <button style="float: right; background-color: red" onclick="removeItem()">X</button>
+                        <button style="float: right; background-color: red" onclick="removeItem('${result[i].uuid}')">X</button>
                         <button style="float: right">Terminal</button>
                         <button style="float: right">Log</button>
                     </div>
                 </div>
                 `
+                ip_arr.push(result[i].ip_add)
             }
         })
         .catch(error => console.log('error', error));
-}
-
-let add = () => {
-    inpfield.innerHTML = `
-        
-    `
-
 }
 
 let addDevice = () => {
@@ -66,4 +55,20 @@ let addDevice = () => {
           .then(result => console.log(result), alert(requestOptions.body))
           .catch(error => console.log('error', error));
     }
+}
+
+let removeItem = (uuid) => {
+    var urlencoded = new URLSearchParams();
+    urlencoded.append("uuid", uuid);
+
+    var requestOptions = {
+    method: 'DELETE',
+    body: urlencoded,
+    redirect: 'follow'
+    };
+
+    fetch("http://127.0.0.1:9999/del", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
 }

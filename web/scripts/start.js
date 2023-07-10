@@ -1,6 +1,7 @@
-import express from 'express'
+import express, { json } from 'express'
 import bodyParser from 'body-parser'
 import fs from 'fs'
+import {v4 as uuidv4 } from 'uuid';
 
 const app = express()
 const path = './web/scripts/switches.json'
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 })
 
 let sw = []
+let rm_arr = []
 
 let initDevs = () => {
     fs.readFile(path, 'utf8', (err, data) => {
@@ -46,13 +48,18 @@ let initDevs = () => {
  app.post('/add', (req, res) => {
     const device = req.body
 
-    sw.push({...device})
+    sw.push({"uuid": uuidv4(), ...device})
     fs.writeFileSync(path, JSON.stringify(sw))
     res.send(`"Added device ${device.name}"`)
  })
 
- app.delete("/delete", (req, res) => {
-    
+
+ app.delete("/del", (req, res) => {
+    const uuid = req.body
+
+    rm_arr = sw.filter((uuid) => sw.uuid !== uuid)
+    fs.writeFileSync(path, JSON.stringify(rm_arr))
+    res.send("Removed device " + uuid)
  })
 
 app.listen(PORT, () => {

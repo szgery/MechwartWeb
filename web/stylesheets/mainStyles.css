@@ -37,3 +37,17 @@ button{
 p{
     margin: 5px;
 }
+
+button{
+    background-color: lightsteelblue;
+    border: 1px solid grey;
+    border-radius: 5px;
+}
+
+button:hover{
+    background-color: rgba(81, 204, 211, 0.5);
+}
+
+button:active{
+    background-color: rgba(255, 0, 0, 0.5);
+}
