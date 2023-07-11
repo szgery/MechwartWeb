@@ -2,9 +2,9 @@ let mscreen = document.getElementById("mainScreen")
 let test = document.getElementById("test")
 let inpfield = document.getElementById("inputfield")
 let stat = document.getElementById("statusReveal")
+let btnAdd = document.getElementById("btnAdd")
 
 let res = []
-let ip_arr = []
 
 let testfunc = () => {
     let requestOptions = {
@@ -17,23 +17,26 @@ let testfunc = () => {
         .then(result => {
             test.innerHTML = ""
             for(let i in result){
-                test.innerHTML += `
-                <div class="card" style="width: 50%">
-                    <div class="card-body">
-                        ${result[i].name}, ip: ${result[i].ip_add}                        
-                        <button style="float: right; background-color: red" onclick="removeItem('${result[i].uuid}')">X</button>
-                        <button style="float: right">Terminal</button>
-                        <button style="float: right">Log</button>
+                if(result[i] !== null){
+                    test.innerHTML += `
+                    <div class="card" style="width: 50%">
+                        <div class="card-body">
+                            ${result[i].name}, ip: ${result[i].ip_add}                        
+                            <button style="float: right; background-color: red" onclick="removeItem('${result[i].uuid}')">X</button>
+                            <button style="float: right">Terminal</button>
+                            <button style="float: right">Log</button>
+                        </div>
                     </div>
-                </div>
-                `
-                ip_arr.push(result[i].ip_add)
+                    `
+                }                
             }
         })
         .catch(error => console.log('error', error));
 }
 
-let addDevice = () => {
+btnAdd.addEventListener('click', function addDevice(event){
+    event.preventDefault()
+
     let name = document.getElementById("inName").value
     let ip = document.getElementById("inIp").value
 
@@ -52,10 +55,19 @@ let addDevice = () => {
         
         fetch("http://127.0.0.1:9999/add", requestOptions)
           .then(response => response.json())
-          .then(result => console.log(result), alert(requestOptions.body))
+          .then(result => console.log(result))
           .catch(error => console.log('error', error));
     }
-}
+
+    testfunc()
+
+    name.value = ""
+    ip.value = 1
+})
+
+// let addDevice = () => {
+    
+// }
 
 let removeItem = (uuid) => {
     var urlencoded = new URLSearchParams();
@@ -69,6 +81,8 @@ let removeItem = (uuid) => {
 
     fetch("http://127.0.0.1:9999/del", requestOptions)
     .then(response => response.text())
-    .then(result => console.log(result))
+    .then(result => console.log(result), alert("Az eszköz törlésre került!"))
     .catch(error => console.log('error', error));
+
+    testfunc()
 }

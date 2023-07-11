@@ -25,7 +25,6 @@ app.get('/', (req, res) => {
 })
 
 let sw = []
-let rm_arr = []
 
 let initDevs = () => {
     fs.readFile(path, 'utf8', (err, data) => {
@@ -33,17 +32,19 @@ let initDevs = () => {
             console.error(err);
             return;
         }
-        //console.log(data.toString());
+        //console.log(data.toString());+
         sw = JSON.parse(data)
     });
 }
- initDevs(path);
+initDevs(path)
 
  app.get('/sw', (req, res) => {
     initDevs(path)
     console.log(sw)
     res.send(sw)
  })
+
+ let indexer = 0;
 
  app.post('/add', (req, res) => {
     const device = req.body
@@ -53,13 +54,20 @@ let initDevs = () => {
     res.send(`"Added device ${device.name}"`)
  })
 
-
  app.delete("/del", (req, res) => {
-    const uuid = req.body
+    const devUuid = req.body.uuid
+    let tempName
 
-    rm_arr = sw.filter((uuid) => sw.uuid !== uuid)
-    fs.writeFileSync(path, JSON.stringify(rm_arr))
-    res.send("Removed device " + uuid)
+    for(let i in sw){
+        if(sw[i].uuid == devUuid){
+            tempName = sw[i].name
+            delete sw[i]    
+            let arr = sw.filter(elements => {return elements !== null})                    
+            fs.writeFileSync(path, JSON.stringify(arr))
+        }
+    }
+
+    res.send("Removed device " + tempName)
  })
 
 app.listen(PORT, () => {
