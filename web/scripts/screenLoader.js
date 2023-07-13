@@ -25,6 +25,7 @@ let testfunc = () => {
                             <button style="float: right; background-color: red" onclick="removeItem('${result[i].uuid}')">X</button>
                             <button style="float: right">Terminal</button>
                             <button style="float: right">Log</button>
+                            <p id="ping" style="float: right"></p>
                         </div>
                     </div>
                     `

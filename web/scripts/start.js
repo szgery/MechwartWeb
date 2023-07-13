@@ -2,6 +2,8 @@ import express, { json } from 'express'
 import bodyParser from 'body-parser'
 import fs from 'fs'
 import {v4 as uuidv4 } from 'uuid';
+import ping from 'ping'
+//import {ip_arr} from './start.js'
 
 const app = express()
 const path = './web/scripts/switches.json'
@@ -38,23 +40,42 @@ let initDevs = () => {
 }
 initDevs(path)
 
- app.get('/sw', (req, res) => {
+app.get('/sw', (req, res) => {
     initDevs(path)
     console.log(sw)
     res.send(sw)
- })
+})
 
- let indexer = 0;
+let indexer = 0;
 
- app.post('/add', (req, res) => {
+app.post('/add', (req, res) => {
     const device = req.body
 
     sw.push({"uuid": uuidv4(), ...device})
     fs.writeFileSync(path, JSON.stringify(sw))
     res.send(`"Added device ${device.name}"`)
- })
+})
 
- app.delete("/del", (req, res) => {
+app.get('/ping', (req, res) => {
+    let result
+
+    try {
+        for(let i in sw){
+            (async function () {
+                result = await ping.promise.probe(sw[i].ip_add, {
+                    timeout: 10,
+                    extra: ["-i", "1"],
+                });
+            
+                console.log(result);
+                })();
+        }
+    } catch (error) {
+        res.send(error)
+    }    
+})
+
+app.delete("/del", (req, res) => {
     const devUuid = req.body.uuid
     let tempName
 
@@ -68,7 +89,7 @@ initDevs(path)
     }
 
     res.send("Removed device " + tempName)
- })
+})
 
 app.listen(PORT, () => {
     console.log(`Users: http://localhost:${PORT}/users`)
