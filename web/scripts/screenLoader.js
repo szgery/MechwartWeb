@@ -3,6 +3,7 @@ let test = document.getElementById("test")
 let inpfield = document.getElementById("inputfield")
 let stat = document.getElementById("statusReveal")
 let btnAdd = document.getElementById("btnAdd")
+let tagBody = document.getElementById("body")
 
 let res = []
 
@@ -23,17 +24,22 @@ let testfunc = () => {
                         <div class="card-body">
                             ${result[i].name}, ip: ${result[i].ip_add}                        
                             <button style="float: right; background-color: red" onclick="removeItem('${result[i].uuid}')">X</button>
-                            <button style="float: right">Terminal</button>
-                            <button style="float: right">Log</button>
-                            <p id="ping" style="float: right"></p>
+                            
+                            <p id="${result[i].ip_add}" style="float: right">${result[i].ip_add_isAlive == "true" ? "Elérhető" : "Nem elérhető"}</p>
                         </div>
                     </div>
                     `
                 }                
             }
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            //console.log('error', error)
+            if(!error.response){
+                test.innerText = "A szerver nem válaszol!"
+            }});
 }
+
+window.onload = testfunc
 
 btnAdd.addEventListener('click', function addDevice(event){
     event.preventDefault()
@@ -56,19 +62,10 @@ btnAdd.addEventListener('click', function addDevice(event){
         
         fetch("http://127.0.0.1:9999/add", requestOptions)
           .then(response => response.json())
-          .then(result => console.log(result))
+          .then(result => {console.log(result), testfunc()})
           .catch(error => console.log('error', error));
     }
-
-    testfunc()
-
-    name.value = ""
-    ip.value = 1
 })
-
-// let addDevice = () => {
-    
-// }
 
 let removeItem = (uuid) => {
     var urlencoded = new URLSearchParams();
@@ -82,8 +79,9 @@ let removeItem = (uuid) => {
 
     fetch("http://127.0.0.1:9999/del", requestOptions)
     .then(response => response.text())
-    .then(result => console.log(result), alert("Az eszköz törlésre került!"))
+    .then(result => {console.log(result)
+        alert("Az eszköz törlésre került!")
+        testfunc()
+    })
     .catch(error => console.log('error', error));
-
-    testfunc()
 }

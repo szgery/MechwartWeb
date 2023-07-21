@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import fs from 'fs'
 import {v4 as uuidv4 } from 'uuid';
 import ping from 'ping'
+import { resolve } from 'path';
 //import {ip_arr} from './start.js'
 
 const app = express()
@@ -33,60 +34,57 @@ let initDevs = () => {
         if (err) {
             console.error(err);
             return;
+        }else{
+            sw = JSON.parse(data)
         }
-        //console.log(data.toString());+
-        sw = JSON.parse(data)
     });
 }
 initDevs(path)
 
 app.get('/sw', (req, res) => {
     initDevs(path)
+
+    for(let i in sw){
+        ping.sys.probe(sw[i].ip_add, function(isAlive){
+            const msg = isAlive ? "true": "false";     
+            if(sw[i])       
+                sw[i].ip_add_isAlive = msg;
+            fs.writeFileSync(path, JSON.stringify(sw))
+        })
+    }   
+
     console.log(sw)
     res.send(sw)
 })
 
-let indexer = 0;
-
 app.post('/add', (req, res) => {
     const device = req.body
 
-    sw.push({"uuid": uuidv4(), ...device})
-    fs.writeFileSync(path, JSON.stringify(sw))
-    res.send(`"Added device ${device.name}"`)
-})
+    ping.sys.probe(device.ip_add, function(isAlive){
+        const msg = isAlive ? "true": "false";
 
-app.get('/ping', (req, res) => {
-    let result
-
-    try {
-        for(let i in sw){
-            (async function () {
-                result = await ping.promise.probe(sw[i].ip_add, {
-                    timeout: 10,
-                    extra: ["-i", "1"],
-                });
-            
-                console.log(result);
-                })();
-        }
-    } catch (error) {
-        res.send(error)
-    }    
+        sw.push({"ip_add_isAlive": msg, "uuid": uuidv4(), ...device})
+        fs.writeFileSync(path, JSON.stringify(sw))
+        res.send(`"Added device ${device.name}, alive: ${msg}"`)
+    })
 })
 
 app.delete("/del", (req, res) => {
     const devUuid = req.body.uuid
     let tempName
 
-    for(let i in sw){
-        if(sw[i].uuid == devUuid){
-            tempName = sw[i].name
-            delete sw[i]    
-            let arr = sw.filter(elements => {return elements !== null})                    
-            fs.writeFileSync(path, JSON.stringify(arr))
-        }
-    }
+    try {
+        for(let i in sw){
+            if(sw[i].uuid == devUuid){
+                tempName = sw[i].name
+                delete sw[i]    
+                sw = sw.filter(elements => {return elements !== null})                    
+                fs.writeFileSync(path, JSON.stringify(sw))
+            }
+        }   
+    } catch (error) {
+        
+    }    
 
     res.send("Removed device " + tempName)
 })
